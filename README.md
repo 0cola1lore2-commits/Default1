@@ -97,6 +97,8 @@ docker run -d --name cofetarie -p 3000:3000 -v cofetarie-date:/data \
   -e ADMIN_PASSWORD='o-parola-lunga' -e SITE_URL='https://www.cofetaria-ta.ro' -e TRUST_PROXY=1 cofetarie
 ```
 
+**Pe Render, direct din telefon sau calculator** (fișierul `render.yaml` face configurarea): intră pe [dashboard.render.com](https://dashboard.render.com), autentifică-te cu GitHub, alege **New → Blueprint**, selectează acest repository, completează parola de administrare și apasă **Deploy**. După câteva minute primești o adresă de forma `https://cofetarie-bezea-….onrender.com`. Pe planul gratuit serviciul „adoarme” după 15 minute fără vizitatori (prima încărcare durează apoi aproximativ un minut) și nu are disc permanent, deci e potrivit pentru test, nu pentru comenzi reale.
+
 Recomandări pentru producție:
 
 - Pune în față un server cu **HTTPS** (de exemplu [Caddy](https://caddyserver.com), care obține automat certificatul) și setează `TRUST_PROXY=1`. Cu `NODE_ENV=production`, cookie-ul de administrare circulă doar prin HTTPS.

@@ -13,5 +13,5 @@ RUN mkdir -p /data && chown -R node:node /data
 USER node
 VOLUME ["/data"]
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://127.0.0.1:3000/robots.txt > /dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- "http://127.0.0.1:${PORT}/robots.txt" > /dev/null || exit 1
 CMD ["node", "--disable-warning=ExperimentalWarning", "server.js"]

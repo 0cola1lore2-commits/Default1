@@ -1,0 +1,18 @@
+# Publicare pe Render (https://render.com) direct din GitHub:
+# Dashboard → New → Blueprint → alege acest repository.
+# La creare, Render cere parola pentru panoul de administrare (ADMIN_PASSWORD).
+# Atenție: pe planul gratuit nu există disc permanent, deci comenzile și
+# fotografiile încărcate se pot pierde la o nouă publicare sau repornire.
+services:
+  - type: web
+    name: cofetarie-bezea
+    runtime: docker
+    plan: free
+    healthCheckPath: /robots.txt
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: TRUST_PROXY
+        value: "1"
+      - key: PORT
+        value: "10000"
