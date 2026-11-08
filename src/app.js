@@ -14,18 +14,20 @@ import { apiRoutes } from './routes/api.js';
 import { publicRoutes } from './routes/public.js';
 import { errorPage } from './views/layout.js';
 
-const CSP = [
-  "default-src 'self'",
-  "img-src 'self' data: blob:",
-  "style-src 'self' 'unsafe-inline'",
-  "script-src 'self'",
-  "font-src 'self'",
-  "connect-src 'self'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-].join('; ');
+function contentSecurityPolicy({ allowEmbed }) {
+  return [
+    "default-src 'self'",
+    "img-src 'self' data: blob:",
+    "style-src 'self' 'unsafe-inline'",
+    "script-src 'self'",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    allowEmbed ? 'frame-ancestors *' : "frame-ancestors 'none'",
+  ].join('; ');
+}
 
 /**
  * @param {{ env?: object, dbFile?: string, clock?: () => Date, notifier?: object, logger?: Console }} options
@@ -38,7 +40,14 @@ export function createApp(options = {}) {
   const store = createStore(db, { clock });
   const seeded = seedIfEmpty(store);
   const secrets = resolveSecrets(env);
-  const auth = createAdminAuth({ secret: secrets.sessionSecret, password: secrets.adminPassword, secureCookies: env.secureCookies });
+  // Într-un cadru (iframe) pe alt domeniu, cookie-ul de administrare are nevoie de SameSite=None; Secure.
+  const auth = createAdminAuth({
+    secret: secrets.sessionSecret,
+    password: secrets.adminPassword,
+    secureCookies: env.allowEmbed || env.secureCookies,
+    sameSite: env.allowEmbed ? 'none' : 'lax',
+  });
+  const CSP = contentSecurityPolicy(env);
   const notifier = options.notifier || createNotifier(env, logger);
   const uploadsDir = path.join(env.dataDir, 'uploads');
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -67,9 +76,9 @@ export function createApp(options = {}) {
       'Content-Security-Policy': CSP,
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'X-Frame-Options': 'DENY',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
     });
+    if (!env.allowEmbed) res.set('X-Frame-Options', 'DENY');
     if (req.secure) res.set('Strict-Transport-Security', 'max-age=15552000');
     next();
   });

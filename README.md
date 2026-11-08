@@ -82,6 +82,7 @@ Copiază `.env.example` ca `.env`. Cele mai importante:
 | `ADMIN_PASSWORD` | parola panoului de administrare |
 | `DATA_DIR` | dosarul cu baza de date și fotografiile (implicit `./data`) |
 | `TRUST_PROXY` | `1` când site-ul rulează în spatele unui proxy (nginx, Caddy, platforme de găzduire) |
+| `ALLOW_EMBED` | `1` ca site-ul să poată fi afișat într-un cadru (iframe), de exemplu într-un panou de previzualizare; implicit interzis |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `SHOP_NOTIFY_EMAIL` | trimiterea emailurilor |
 
 ## Publicare online

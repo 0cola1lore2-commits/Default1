@@ -139,6 +139,8 @@ export function loadEnv(overrides = {}) {
     sessionSecret: e.SESSION_SECRET || '',
     trustProxy: e.TRUST_PROXY ? (/^\d+$/.test(e.TRUST_PROXY) ? Number(e.TRUST_PROXY) : bool(e.TRUST_PROXY)) : false,
     secureCookies: bool(e.SECURE_COOKIES, e.NODE_ENV === 'production'),
+    // Permite afișarea site-ului într-un cadru (iframe), de exemplu într-un panou de previzualizare.
+    allowEmbed: bool(e.ALLOW_EMBED),
     mail: {
       host: e.SMTP_HOST || '',
       port: Number(e.SMTP_PORT) || 587,

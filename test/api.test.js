@@ -173,3 +173,29 @@ describe('comenzi oprite din setări', () => {
     }
   });
 });
+
+describe('afișarea în cadre (iframe)', () => {
+  test('implicit este interzisă, iar cu ALLOW_EMBED=1 este permisă', async () => {
+    const strict = await startTestServer();
+    const embed = await startTestServer({ env: { ALLOW_EMBED: '1' } });
+    try {
+      const a = await fetch(`${strict.base}/`);
+      assert.equal(a.headers.get('x-frame-options'), 'DENY');
+      assert.match(a.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+      const b = await fetch(`${embed.base}/`);
+      assert.equal(b.headers.get('x-frame-options'), null);
+      assert.match(b.headers.get('content-security-policy'), /frame-ancestors \*/);
+      const login = await fetch(`${embed.base}/admin/autentificare`, {
+        method: 'POST',
+        redirect: 'manual',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ parola: 'parola-de-test' }),
+      });
+      assert.match(login.headers.get('set-cookie'), /SameSite=None/);
+      assert.match(login.headers.get('set-cookie'), /Secure/);
+    } finally {
+      await strict.close();
+      await embed.close();
+    }
+  });
+});

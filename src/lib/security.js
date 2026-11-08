@@ -62,7 +62,7 @@ function safeEqual(a, b) {
   return x.length === y.length && crypto.timingSafeEqual(x, y);
 }
 
-export function createAdminAuth({ secret, password, secureCookies, ttlHours = 12 }) {
+export function createAdminAuth({ secret, password, secureCookies, sameSite = 'lax', ttlHours = 12 }) {
   const COOKIE = 'bezea_admin';
   const sign = (data) => crypto.createHmac('sha256', secret).update(data).digest('base64url');
   const hash = (text) => crypto.createHash('sha256').update(String(text)).digest();
@@ -76,7 +76,7 @@ export function createAdminAuth({ secret, password, secureCookies, ttlHours = 12
       const payload = Buffer.from(JSON.stringify({ exp: Date.now() + ttlHours * 3600_000, n: crypto.randomBytes(12).toString('base64url') })).toString('base64url');
       res.cookie(COOKIE, `${payload}.${sign(payload)}`, {
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite,
         secure: secureCookies,
         path: '/admin',
         maxAge: ttlHours * 3600_000,
@@ -84,7 +84,7 @@ export function createAdminAuth({ secret, password, secureCookies, ttlHours = 12
     },
 
     logout(res) {
-      res.clearCookie(COOKIE, { path: '/admin', httpOnly: true, sameSite: 'lax', secure: secureCookies });
+      res.clearCookie(COOKIE, { path: '/admin', httpOnly: true, sameSite, secure: secureCookies });
     },
 
     /** Sesiunea curentă sau null. */
