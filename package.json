@@ -1,0 +1,22 @@
+{
+  "name": "cofetaria-bezea",
+  "version": "1.0.0",
+  "description": "Cofetărie online: catalog de produse, coș de cumpărături, comenzi cu programare, tort personalizat și panou de administrare.",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test",
+    "db:reset": "node --disable-warning=ExperimentalWarning scripts/reset-db.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^5.3.0",
+    "nodemailer": "^10.4.0"
+  }
+}
